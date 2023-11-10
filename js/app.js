@@ -72,6 +72,45 @@ UI.prototype.mostrarAlerta = function (mensaje, tipo) {
     }, 3000);
 }
 
+UI.prototype.mostrarResultado = function (total, seguro) {
+    const {marca, year, tipo} = seguro;
+
+    let nombre_marca;
+    switch(marca){
+        case '1':
+            nombre_marca = 'Americano'
+            break;
+        case '2':
+            nombre_marca = 'Asiatico'
+            break;
+        case '3':
+            nombre_marca = 'Europeo'
+            break;
+        default:
+            break;
+    }
+
+    // crear el resultado de la cotizacion
+    const div = document.createElement('DIV');
+    div.classList.add('mt-5');
+
+    div.innerHTML = `
+        <p class='header'>Tu resumen</p>
+        <p class='font-bold'>Marca: <span class='font-normal'>${nombre_marca} </span> 
+        <p class='font-bold'>Año: <span class='font-normal'>${year} </span> 
+        <p class='font-bold'>Seguro: <span class='font-normal'>${tipo} </span> 
+        <p class='font-bold'>Total: <span class='font-normal'>$${total} </span> </p>
+    `
+    const resultado = document.querySelector('#resultado')
+    // mostrar el spinner
+    const spinner = document.querySelector('#cargando');
+    spinner.style.display = 'block';
+    setTimeout(() => {
+        spinner.style.display = 'none';
+        resultado.appendChild(div); // se agrega el resultado
+    }, 3000);
+}
+
 const ui = new UI();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -100,9 +139,17 @@ function cotizarSeguro(e) {
         ui.mostrarAlerta('Todos los campos deben ser completados', 'error')
         return;
     }
-    ui.mostrarAlerta('Cotizando....', 'correcto')
+    ui.mostrarAlerta('Cotizando....', 'correcto');
 
+    const resultado = document.querySelector('#resultado div');
+    if(resultado !== null){
+        resultado.remove()
+    }
     // instanciar seguro
-    const seguro = new Seguro(marca, year, tipo)
-    seguro.cotizarSeguro()
+    const seguro = new Seguro(marca, year, tipo);
+    const total = seguro.cotizarSeguro();
+
+    // el prtotype que va a mostrar el resultado
+ui.mostrarResultado(total, seguro)
+
 }
